@@ -1,95 +1,41 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="utf-8">
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sticky Beak Formatter</title>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
-    <style>
-
-        body{
-            font-family:Arial;
-            max-width:1000px;
-            margin:40px auto;
-            padding:20px;
-            background:#f5f5f5;
-        }
-
-        .card{
-            background:white;
-            padding:20px;
-            margin-bottom:20px;
-            border-radius:8px;
-        }
-
-        button{
-            background:#2e4a62;
-            color:white;
-            border:none;
-            padding:10px 20px;
-            cursor:pointer;
-            border-radius:5px;
-        }
-
-        button:hover{
-            background:#496d91;
-        }
-
-        #status{
-            padding:10px;
-            background:white;
-            border-radius:8px;
-        }
-
-    </style>
-
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-<h1>Sticky Beak Formatter</h1>
+    <h1>Sticky Beak Formatter</h1>
 
-<div class="card">
+    <div class="card">
+        <h2>PMO365 Export</h2>
+        <input type="file" id="pmoFile" accept=".xlsx,.xls">
+    </div>
 
-    <h2>PMO365 Export</h2>
+    <div class="card">
+        <h2>CAPEX Program PDF</h2>
+        <input type="file" id="pdfFile" accept=".pdf">
+    </div>
 
-    <input
-        type="file"
-        id="pmoFile"
-        accept=".xlsx,.xls"
-    >
+    <div class="card">
+        <button id="generateButton">
+            Generate CAPEX Spreadsheet
+        </button>
+    </div>
 
-</div>
+    <div id="status">
+        Ready
+    </div>
 
-<div class="card">
-
-    <h2>CAPEX PDF</h2>
-
-    <input
-        type="file"
-        id="pdfFile"
-        accept=".pdf"
-    >
-
-</div>
-
-<div class="card">
-
-    <button id="generateButton">
-        Generate CAPEX Spreadsheet
-    </button>
-
-</div>
-
-<div id="status">
-Ready
-</div>
-
-<script src="app.js"></script>
+    <script src="app.js"></script>
 
 </body>
 </html>
