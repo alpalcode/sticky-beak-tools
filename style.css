@@ -1,0 +1,30 @@
+body {
+    font-family: Arial, sans-serif;
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 20px;
+    background-color: #f5f5f5;
+}
+
+h1 {
+    color: #2e4a62;
+}
+
+.card {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+input[type="file"] {
+    margin-top: 10px;
+}
+
+#status {
+    margin-top: 20px;
+    padding: 10px;
+    background: #eef5ff;
+    border-radius: 6px;
+}
