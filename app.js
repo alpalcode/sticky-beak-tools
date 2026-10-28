@@ -1,71 +1,99 @@
-let pdfText = "";
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+    "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
 
-document
-.getElementById("generateButton")
-.addEventListener("click", generateCapex);
+document.addEventListener("DOMContentLoaded", () => {
 
-async function generateCapex(){
+    const button =
+        document.getElementById("generateButton");
 
-    const pdf =
-        document.getElementById("pdfFile")
-        .files[0];
+    button.addEventListener("click", generateSpreadsheet);
 
-    if(!pdf){
+});
 
-        alert("Select CAPEX PDF first");
+async function generateSpreadsheet() {
+
+    const pdfFile =
+        document.getElementById("pdfFile").files[0];
+
+    const status =
+        document.getElementById("status");
+
+    if (!pdfFile) {
+
+        alert("Please select a CAPEX PDF");
 
         return;
     }
 
-    document.getElementById("status")
-    .innerHTML =
-    "Reading PDF...";
+    status.innerHTML = "Reading PDF...";
 
-    await readPDF(pdf);
+    try {
 
-    createCapexWorkbook();
+        const text =
+            await extractPdfText(pdfFile);
+
+        const workbook =
+            createWorkbook(text);
+
+        XLSX.writeFile(
+            workbook,
+            "CAPEX_Formatted.xlsx"
+        );
+
+        status.innerHTML =
+            "✓ Spreadsheet generated successfully";
+
+    } catch (error) {
+
+        console.error(error);
+
+        status.innerHTML =
+            "Error processing PDF";
+
+    }
 }
 
-async function readPDF(file){
+async function extractPdfText(file) {
 
-    const bytes =
+    const buffer =
         await file.arrayBuffer();
 
-    const pdfDoc =
+    const pdf =
         await pdfjsLib
-        .getDocument({
-            data:bytes
-        }).promise;
+            .getDocument({ data: buffer })
+            .promise;
 
-    pdfText = "";
+    let fullText = "";
 
-    for(
-        let p=1;
-        p<=pdfDoc.numPages;
-        p++
-    ){
+    for (
+        let pageNumber = 1;
+        pageNumber <= pdf.numPages;
+        pageNumber++
+    ) {
 
         const page =
-            await pdfDoc.getPage(p);
+            await pdf.getPage(pageNumber);
 
         const content =
             await page.getTextContent();
 
-        const text =
+        const pageText =
             content.items
-            .map(item=>item.str)
-            .join(" ");
+                .map(item => item.str)
+                .join(" ");
 
-        pdfText += text + "\n";
+        fullText += pageText + "\n";
+
     }
+
+    return fullText;
 }
 
-function createCapexWorkbook(){
+function createWorkbook(text) {
 
-    const rows=[];
+    const rows = [];
 
     rows.push([
-
         "Project Code",
         "Name",
         "Project Lifespan",
@@ -74,66 +102,51 @@ function createCapexWorkbook(){
         "Current Phase",
         "Portfolio",
         "Program"
-
     ]);
 
     const lines =
-        pdfText.split("\n");
+        text.split("\n");
 
-    let count=1;
+    let counter = 1;
 
-    lines.forEach(line=>{
+    lines.forEach(line => {
 
-        if(
-            line.length > 20 &&
-            /\d{1,3},\d{3}/.test(line)
-        ){
+        if (
+            line.length > 25
+        ) {
 
             rows.push([
-
                 "CAPEX-" +
-                String(count)
-                .padStart(4,"0"),
+                    String(counter)
+                    .padStart(4, "0"),
 
-                line.substring(0,120),
-
-                "",
+                line.substring(0, 150),
 
                 "",
-
+                "",
                 "CAPEX",
-
                 "Forward Planning",
-
                 "",
-
                 ""
-
             ]);
 
-            count++;
+            counter++;
+
         }
 
     });
 
-    const wb =
+    const workbook =
         XLSX.utils.book_new();
 
-    const ws =
+    const worksheet =
         XLSX.utils.aoa_to_sheet(rows);
 
     XLSX.utils.book_append_sheet(
-        wb,
-        ws,
-        "CAPEX"
+        workbook,
+        worksheet,
+        "CAPEX Program"
     );
 
-    XLSX.writeFile(
-        wb,
-        "CAPEX_Formatted.xlsx"
-    );
-
-    document.getElementById("status")
-    .innerHTML =
-    "CAPEX spreadsheet downloaded";
+    return workbook;
 }
